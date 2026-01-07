@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    tools {
+        sonarScanner 'SonarScanner'
+    }
+
     stages {
 
         stage('Checkout Code') {
@@ -12,25 +16,28 @@ pipeline {
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('SonarQube') {
-                    sh 'sonar-scanner'
+                    sh '''
+                    sonar-scanner \
+                      -Dsonar.projectKey=static-website \
+                      -Dsonar.sources=.
+                    '''
                 }
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t static-website .'
+                sh 'docker build -t enterprise-site .'
             }
         }
 
         stage('Deploy Website') {
             steps {
                 sh '''
-                docker rm -f static-website || true
-                docker run -d -p 80:80 --name static-website static-website
+                docker rm -f enterprise-site || true
+                docker run -d -p 80:80 --name enterprise-site enterprise-site
                 '''
             }
         }
     }
 }
-
