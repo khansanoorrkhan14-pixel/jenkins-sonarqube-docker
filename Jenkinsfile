@@ -1,10 +1,6 @@
 pipeline {
     agent any
 
-    tools {
-        sonarRunner 'SonarScanner'
-    }
-
     stages {
 
         stage('Checkout Code') {
@@ -16,11 +12,14 @@ pipeline {
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('SonarQube') {
-                    sh '''
-                    ${SONAR_RUNNER_HOME}/bin/sonar-scanner \
-                    -Dsonar.projectKey=static-website \
-                    -Dsonar.sources=.
-                    '''
+                    script {
+                        def scannerHome = tool 'SonarScanner'
+                        sh """
+                        ${scannerHome}/bin/sonar-scanner \
+                        -Dsonar.projectKey=static-website \
+                        -Dsonar.sources=.
+                        """
+                    }
                 }
             }
         }
