@@ -23,15 +23,15 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t enterprise-site .'
+                sh 'docker build -t static-website .'
             }
         }
 
         stage('Deploy Website') {
             steps {
                 sh '''
-                docker rm -f enterprise-site || true
-                docker run -d -p 80:80 --name enterprise-site enterprise-site
+                docker rm -f static-website || true
+                docker run -d -p 80:80 --name static-website static-website
                 '''
             }
         }
